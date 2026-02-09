@@ -197,6 +197,46 @@ final class SnapshotTests: XCTestCase {
     #endif
   }
 
+  // MARK: Reproduction Cases
+  
+  func testIssue1717_Frame514() async throws {
+    guard try SnapshotTests.enabled else { return }
+    
+    let animationName = "Issues/time_overshoot"
+    let configuration = LottieConfiguration(renderingEngine: .mainThread)
+    
+    // Create a custom snapshot configuration for this test
+    let snapshotConfig = SnapshotConfiguration(
+      precision: 0.99
+    )
+    
+    // Manually creating the animation view to control the frame exactly
+    guard let animationView = await SnapshotConfiguration.makeAnimationView(
+      for: animationName,
+      configuration: configuration,
+      customSnapshotConfiguration: snapshotConfig
+    ) else {
+      XCTFail("Could not create animation view for \(animationName)")
+      return
+    }
+    
+    // Iterate to find overshoot
+    for i in 0...60 {
+      let frame = CGFloat(i)
+      animationView.currentFrame = frame
+      animationView.forceDisplayUpdate()
+      
+      if i == 15 {
+          // Capture snapshot for regression testing
+          assertSnapshot(
+            matching: animationView,
+            as: .image(precision: 0.99),
+            named: "Frame15"
+          )
+      }
+    }
+  }
+
 }
 
 // MARK: Animation + snapshotSize

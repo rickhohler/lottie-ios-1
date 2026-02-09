@@ -74,8 +74,9 @@ final class TrimPathNode: AnimatorNode {
 
   func rebuildOutputs(frame: CGFloat) {
     /// Make sure there is a trim.
-    let startValue = properties.start.value.cgFloatValue * 0.01
-    let endValue = properties.end.value.cgFloatValue * 0.01
+    let startValue = min(max(properties.start.value.cgFloatValue * 0.01, 0), 1)
+    let endValue = min(max(properties.end.value.cgFloatValue * 0.01, 0), 1)
+    
     let start = min(startValue, endValue)
     let end = max(startValue, endValue)
 
