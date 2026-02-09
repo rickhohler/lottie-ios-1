@@ -12,7 +12,9 @@ let package = Package(
     .library(name: "Lottie-Dynamic", type: .dynamic, targets: ["Lottie"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/airbnb/swift", .upToNextMajor(from: "1.2.0"))
+    .package(url: "https://github.com/airbnb/swift", .upToNextMajor(from: "1.2.0")),
+    .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.10.0"),
+    .package(url: "https://github.com/krzysztofzablocki/Difference.git", from: "1.0.1"),
   ],
   targets: [
     .target(
@@ -26,6 +28,19 @@ let package = Package(
       ],
       resources: [.copy("PrivacyInfo.xcprivacy")],
       swiftSettings: [.swiftLanguageMode(.v5)]
+    ),
+    .testTarget(
+      name: "LottieTests",
+      dependencies: [
+        "Lottie",
+        .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+        .product(name: "Difference", package: "Difference"),
+      ],
+      path: "Tests",
+      exclude: [
+        "__Snapshots__",
+        "LottieTests.xctestplan"
+      ]
     )
   ]
 )
